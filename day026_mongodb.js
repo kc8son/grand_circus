@@ -453,7 +453,7 @@ Extended Challenges:
 14 - List all submissions that have more downvotes than upvotes.
 
 
-// mongodb+srv://kc8son:xafl8iLm6IGXVMBZ@cluster0.utmyy3i.mongodb.net/test
+// mongodb+srv://xxxxx
 ===============================
 Count all people with at least one child under age four. (69)
 ////	This is the hardrst of the three!!
