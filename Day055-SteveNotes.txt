@@ -1,0 +1,75 @@
+  to  Everyone
+version: '3.7'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    restart: on-failure
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    restart: on-failure
+
+Steven Frederick  to  Everyone 8:18 PM
+got the code to work, had a few spelling errors
+CONSUMER.PY 
+
+
+import os
+from kafka import KafkaConsumer
+
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", 'localhost:29092')
+KAFKA_TOPIC = os.environ.get("KAFKA_TOPIC", 'latest_events')
+KAFKA_API_VERSION = os.environ.get('KAFKA_API_VERSION', '7.3.1')
+
+consumer = KafkaConsumer(
+    KAFKA_TOPIC,
+    bootstrap_servers=[KAFKA_BOOTSTRAP_SERVERS],
+    api_version=KAFKA_API_VERSION,
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+)
+
+for message in consumer:
+    print(message.value.decode('utf-8'))
+PRODUCER.PY
+
+import os
+import requests
+from kafka import KafkaProducer
+
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", 'localhost:29092')
+KAFKA_TOPIC = os.environ.get("KAFKA_TOPIC", 'latest_events')
+KAFKA_API_VERSION = os.environ.get('KAFKA_API_VERSION', '7.3.1')
+
+request_url = 'https://stream.wikimedia.org/v2/stream/recentchange'
+
+producer = KafkaProducer(
+    bootstrap_servers=[KAFKA_BOOTSTRAP_SERVERS],
+    api_version=KAFKA_API_VERSION,
+)
+response = requests.get(request_url, stream=True)
+
+for line in response.iter_lines():
+    if line:
+        producer.send(
+            KAFKA_TOPIC,
+            line
+        )
+producer.flush()

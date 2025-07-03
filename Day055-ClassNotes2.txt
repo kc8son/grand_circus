@@ -1,0 +1,13 @@
+ClassNotes
+
+Youtube search runnign kafka under docker
+https://www.youtube.com/results?search_query=running+kafka+in+docker+
+
+finematics.com
+
+#   https://dev.to/hesbon/apache-kafka-with-python-laa
+
+
+Check logs...
+docker logs zookeeper
+docker logs kafka

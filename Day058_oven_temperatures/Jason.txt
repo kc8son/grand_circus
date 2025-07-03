@@ -1,0 +1,6 @@
+4. cd oven, then do 'docker build -t oven .'
+5. cd ..\kafka_producer, modify first line to be 'FROM confluentinc/cp-kafka:latest' (latest.amd64 is for Apple M1 machines) then do 'docker build -t kafkaproducer .'
+6. cd ..\spark, then do 'docker build -t spark .'
+7. cd ..\zookeeper, then do 'docker build -t zookeeper .'
+8. cd ..\broker, then do 'docker build -t broker .'
+9. Once those are done, go back to direcotry 'labs/de2/oven_temperature', then do 'docker compose up'
